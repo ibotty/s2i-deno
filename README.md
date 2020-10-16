@@ -23,6 +23,5 @@ $ podman build . --build-arg MAIN=welcome.ts -t app
 Running the example app:
 ```console
 $ podman run -t localhost/app 
-Check file:///opt/app-root/src/welcome.ts
 Welcome to Deno 🦕
 ```
