@@ -38,5 +38,5 @@ $ podman build . --build-arg MAIN=welcome.ts -t app
 Running the example app:
 ```console
 $ podman run -t localhost/app 
-Welcome to Deno 🦕
+Welcome to Deno(12:48) 🦕
 ```
