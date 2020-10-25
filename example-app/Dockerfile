@@ -1,4 +1,4 @@
-FROM localhost/ubi8-s2i-deno:latest
+FROM localhost/nodeshift/ubi8-s2i-deno:latest
 
 ARG MAIN
 ENV MAIN=${MAIN}

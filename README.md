@@ -16,7 +16,7 @@ not be to difficult to add in the same why that the MAIN entry ts file is specif
 
 Build this image:
 ```console
-$ podman build -t ubi8-s2i-deno .
+$ podman build -t nodeshift/ubi8-s2i-deno .
 ```
 
 Run the image:
