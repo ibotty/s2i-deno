@@ -8,12 +8,6 @@ application and I think what it does is resovles dependencies and compiles
 the Typescript into JavaScript which can then be executed by the Deno runtime.
 Doing this in the assemble stage will mean that the startup time is improved.
 
-TODO: 
-* The image size is quite large and we might be able to use a smaller 
-base image.
-* Also currently there are no permissions passed on when building but this should
-not be to difficult to add in the same why that the MAIN entry ts file is specified.
-
 Build this image:
 ```console
 $ podman build -t nodeshift/ubi8-s2i-deno .
@@ -51,3 +45,9 @@ $ podman run -t localhost/app
 Welcome to Deno(14:24) 🦕
 Does /etc/passwd exist: true
 ```
+
+### TODO
+* The image size is quite large and we might be able to use a smaller
+base image.
+* Also currently there are no permissions passed on when building but this should
+not be to difficult to add in the same why that the MAIN entry ts file is specified.
