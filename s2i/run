@@ -5,7 +5,7 @@ source /usr/libexec/s2i/env
 source /usr/libexec/s2i/generate-container-user
 
 run_deno() {
-  deno run main.js
+  deno run ${PERMISSIONS} main.js
 }
 
 run_deno

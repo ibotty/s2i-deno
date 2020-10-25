@@ -28,10 +28,26 @@ Build an s2i example-app, specifying which Typescript file is the main entry
 point using the `MAIN` build argument:
 ```console
 $ cd example-app
-$ podman build . --build-arg MAIN=welcome.ts -t app
+$ podman build . --build-arg MAIN=welcome.ts --build-arg PERMISSIONS="--allow-read=/etc" -t app
 ```
+The `PERMISSION` build argument is an example of using Deno's permissions to
+allow the application to read from the file system. Without this flag the an
+error would be produced at runtime:
+```console
+error: Uncaught PermissionDenied: read access to "/etc/passwd", run again with the --allow-read flag
+    at processResponse (core.js:226:13)
+    at Object.jsonOpSync (core.js:250:12)
+    at Object.lstatSync (deno:cli/rt/30_fs.js:216:22)
+    at Object.existsSync (file:///opt/app-root/src/main.js:11267:18)
+    at execute (file:///opt/app-root/src/main.js:11300:65)
+    at gExp (file:///opt/app-root/src/main.js:91:7)
+    at __instantiate (file:///opt/app-root/src/main.js:98:27)
+    at file:///opt/app-root/src/main.js:11305:1
+```
+
 Running the example app:
 ```console
 $ podman run -t localhost/app 
-Welcome to Deno(12:48) 🦕
+Welcome to Deno(14:24) 🦕
+Does /etc/passwd exist: true
 ```
