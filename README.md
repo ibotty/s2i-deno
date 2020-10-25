@@ -14,11 +14,6 @@ base image.
 * Also currently there are no permissions passed on when building but this should
 not be to difficult to add in the same why that the MAIN entry ts file is specified.
 
-### Install s2i
-```console
-$ sudo dnf install -y s2i
-```
-
 Build this image:
 ```console
 $ podman build -t ubi8-s2i-deno .
