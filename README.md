@@ -48,6 +48,15 @@ Welcome to Deno(14:24) 🦕
 Does /etc/passwd exist: true
 ```
 
+### TypeScript config
+A TypeScript configuration can be passed to Deno's bundle command using the
+following option:
+```console
+$ podman build . --build-arg MAIN=welcome.ts --build-arg TSCONFIG="tsconfig.json"
+```
+The `tsconfig.json` file must be copied to the image, so it need to be added
+in the DockerFile that uses/extends this image.
+
 ### TODO
 * The image size is quite large and we might be able to use a smaller
 base image.
