@@ -19,7 +19,9 @@ $ podman run -it localhost/ubi8-s2i-deno /bin/bash
 ```
 
 Build an s2i example-app, specifying which Typescript file is the main entry
-point using the `MAIN` build argument:
+point using the `MAIN` build argument, and also shows how a
+[PERMISSION](https://deno.land/manual/getting_started/permissions) option can
+be passed to the build.:
 ```console
 $ cd example-app
 $ podman build . --build-arg MAIN=welcome.ts --build-arg PERMISSIONS="--allow-read=/etc" -t app
