@@ -59,6 +59,8 @@ in the DockerFile that uses/extends this image.
 
 ### TODO
 * The image size is quite large and we might be able to use a smaller
-base image.
+base image. An idea is to use Deno's install command to create a single executable
+and then have minimal image size for the end users container. Something similar
+to what we did for [faas-wasi-runtime-example](https://github.com/danbev/faas-wasi-runtime-example/blob/master/Dockerfile)
 * Also currently there are no permissions passed on when building but this should
 not be to difficult to add in the same why that the MAIN entry ts file is specified.
