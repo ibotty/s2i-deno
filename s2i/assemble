@@ -13,4 +13,5 @@ then
   echo "---> Using TypeScript config ${TSCONFIG}"
 fi
 
+echo -e "Deno version:\n`deno --version`"
 deno bundle ${TSCONFIG_FLAG} ${MAIN} > main.js
