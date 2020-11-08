@@ -14,4 +14,4 @@ then
 fi
 
 echo -e "Deno version:\n`deno --version`"
-deno bundle ${TSCONFIG_FLAG} ${MAIN} > main.js
+deno bundle ${TSCONFIG_FLAG} ${MAIN} > bundle.js
