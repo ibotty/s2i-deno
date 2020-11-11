@@ -1,27 +1,32 @@
 # ubi8-s2i-deno
-This project is just for exploring what a source-to-image (s2i) might look like
-for Deno applications.
+This project is just for exploring what a
+[source-to-image](https://github.com/openshift/source-to-image) (s2i) might look
+like for [Deno](https://deno.land/) applications.
 
-The idea here is that the s2i will provide the Deno runtime, and take a users
-Typescript application and bundle, which is a feature in Deno which takes the
-application and I think what it does is resovles dependencies and compiles
-the Typescript into JavaScript which can then be executed by the Deno runtime.
-Doing this in the assemble stage will mean that the startup time is improved.
+The goal here is that a user can have a Deno project, for example on github,
+and use the `s2i` build command to point to that project and `s2i` will generate
+an container with that application which can then be run. The container will
+include Deno and run the application when the image is run.
 
-Build this image:
+As part of the assemble stage this Deno `s2i` will use Deno's `bundle` command to
+resovle and download any depedencies, as well as compile any TypeScript so that
+this does not have to happen at runtime.
+
+### Building
 ```console
-$ podman build -t nodeshift/ubi8-s2i-deno .
+$ docker build -t nodeshift/ubi8-s2i-deno .
 ```
 
-Run the image:
+### Running
+Run this image (will print the usage):
 ```console
-$ podman build -t nodeshift/ubi8-s2i-deno
+$ docker build -t nodeshift/ubi8-s2i-deno
 ```
 This will print the usage information.
 
-### Using the s2i command with the sample project
+### Example usage
 There is an example Deno application in [example-app](./example-app) which can
-be specified to be build by s2i to produce a runnable image using the following
+be specified to be build by `s2i` to produce a runnable image using the following
 commands:
 ```console
 $ s2i build file:///$PWD nodeshift/ubi8-s2i-deno:latest --context-dir=example-app deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
@@ -33,7 +38,7 @@ Does /etc/passwd exist: true
 
 ### Configuration options
 There are options specified as environment variables using the `-e` option for
-s2i build command.
+`s2i` build command.
 
 #### MAIN
 The TypeScript/JavaScript file which is the main entry point for the app.
