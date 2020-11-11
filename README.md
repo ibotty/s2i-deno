@@ -27,10 +27,14 @@ This will print the usage information.
 ### Example usage
 There is an example Deno application in [example-app](./example-app) which can
 be specified to be built by `s2i` to produce a runnable image using the following
-commands:
+commands.
+
+Build using `s2i`:
 ```console
 $ s2i build file:///$PWD nodeshift/ubi8-s2i-deno:latest --context-dir=example-app deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
-
+```
+And the run the produced image:
+```console
 $ docker run -t deno-sample-app
 Welcome to Deno(14:24) 🦕
 Does /etc/passwd exist: true
