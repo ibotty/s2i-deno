@@ -26,7 +26,7 @@ This will print the usage information.
 
 ### Example usage
 There is an example Deno application in [example-app](./example-app) which can
-be specified to be build by `s2i` to produce a runnable image using the following
+be specified to be built by `s2i` to produce a runnable image using the following
 commands:
 ```console
 $ s2i build file:///$PWD nodeshift/ubi8-s2i-deno:latest --context-dir=example-app deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
@@ -50,9 +50,3 @@ that can be set using the PERMISSIONS environment variable.
 #### TSCONFIG
 Is an optional build option to specify a TypeScript configuration file.
 
-### Running the example app:
-```console
-$ podman run -t localhost/app 
-Welcome to Deno(14:24) 🦕
-Does /etc/passwd exist: true
-```
