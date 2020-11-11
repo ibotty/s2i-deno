@@ -3,6 +3,8 @@
 set -e
 
 source /usr/libexec/s2i/env
+cp -r /tmp/src/ /opt/app-root/
+pushd /opt/app-root/src > /dev/null
 
 echo "---> Bundling your Deno application"
 

@@ -15,52 +15,39 @@ $ podman build -t nodeshift/ubi8-s2i-deno .
 
 Run the image:
 ```console
-$ podman run -it localhost/ubi8-s2i-deno /bin/bash
+$ podman build -t nodeshift/ubi8-s2i-deno
+```
+This will print the usage information.
+
+### Using the s2i command with the sample project
+There is an example Deno application in [example-app](./example-app) which can
+be specified to be build by s2i to produce a runnable image using the following
+commands:
+```console
+$ s2i build file:///$PWD nodeshift/ubi8-s2i-deno:latest --context-dir=example-app deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
+
+$ docker run -t deno-sample-app
+Welcome to Deno(14:24) 🦕
+Does /etc/passwd exist: true
 ```
 
-Build an s2i example-app, specifying which Typescript file is the main entry
-point using the `MAIN` build argument, and also shows how a
-[PERMISSION](https://deno.land/manual/getting_started/permissions) option can
-be passed to the build.:
-```console
-$ cd example-app
-$ podman build . --build-arg MAIN=welcome.ts --build-arg PERMISSIONS="--allow-read=/etc" -t app
-```
-The `PERMISSION` build argument is an example of using Deno's permissions to
-allow the application to read from the file system. Without this flag the an
-error would be produced at runtime:
-```console
-error: Uncaught PermissionDenied: read access to "/etc/passwd", run again with the --allow-read flag
-    at processResponse (core.js:226:13)
-    at Object.jsonOpSync (core.js:250:12)
-    at Object.lstatSync (deno:cli/rt/30_fs.js:216:22)
-    at Object.existsSync (file:///opt/app-root/src/main.js:11267:18)
-    at execute (file:///opt/app-root/src/main.js:11300:65)
-    at gExp (file:///opt/app-root/src/main.js:91:7)
-    at __instantiate (file:///opt/app-root/src/main.js:98:27)
-    at file:///opt/app-root/src/main.js:11305:1
-```
+### Configuration options
+There are options specified as environment variables using the `-e` option for
+s2i build command.
 
-Running the example app:
+#### MAIN
+The TypeScript/JavaScript file which is the main entry point for the app.
+
+#### PERMISSIONS
+Are optional [PERMISSIONs](https://deno.land/manual/getting_started/permissions) 
+that can be set using the PERMISSIONS environment variable.
+
+#### TSCONFIG
+Is an optional build option to specify a TypeScript configuration file.
+
+### Running the example app:
 ```console
 $ podman run -t localhost/app 
 Welcome to Deno(14:24) 🦕
 Does /etc/passwd exist: true
 ```
-
-### TypeScript config
-A TypeScript configuration can be passed to Deno's bundle command using the
-following option:
-```console
-$ podman build . --build-arg MAIN=welcome.ts --build-arg TSCONFIG="tsconfig.json"
-```
-The `tsconfig.json` file must be copied to the image, so it need to be added
-in the DockerFile that uses/extends this image.
-
-### TODO
-* The image size is quite large and we might be able to use a smaller
-base image. An idea is to use Deno's install command to create a single executable
-and then have minimal image size for the end users container. Something similar
-to what we did for [faas-wasi-runtime-example](https://github.com/danbev/faas-wasi-runtime-example/blob/master/Dockerfile)
-* Also currently there are no permissions passed on when building but this should
-not be to difficult to add in the same why that the MAIN entry ts file is specified.

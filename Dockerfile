@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/s2i-core
+FROM registry.access.redhat.com/ubi8/s2i-base
 
 EXPOSE 8080
 
@@ -23,9 +23,9 @@ LABEL io.k8s.description="$DESCRIPTION" \
       name="nodeshift/ubi8-s2i-deno" \
       usage="s2i build . nodeshift/ubi8-s2i-deno myapp"
 
-COPY ./s2i/ $STI_SCRIPTS_PATH
 COPY ./contrib/ /opt/app-root
 RUN /opt/app-root/etc/install_deno.sh
+COPY ./s2i/ $STI_SCRIPTS_PATH
 ENV PATH="/opt/app-root/src/.deno/bin:${PATH}"
 
 USER 1001
