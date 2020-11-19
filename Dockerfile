@@ -20,8 +20,8 @@ LABEL io.k8s.description="$DESCRIPTION" \
       summary="$SUMMARY" \
       description="$DESCRIPTION" \
       version="$DENO_VERSION" \
-      name="nodeshift/ubi8-s2i-deno" \
-      usage="s2i build . nodeshift/ubi8-s2i-deno myapp"
+      name="dbevenius/ubi8-s2i-deno" \
+      usage="s2i build . dbevenius/ubi8-s2i-deno myapp"
 
 COPY ./contrib/ /opt/app-root
 RUN /opt/app-root/etc/install_deno.sh

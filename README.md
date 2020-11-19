@@ -14,13 +14,13 @@ this does not have to happen at runtime.
 
 ### Building
 ```console
-$ docker build -t nodeshift/ubi8-s2i-deno .
+$ docker build -t dbevenius/ubi8-s2i-deno .
 ```
 
 ### Running
 Run this image (will print the usage):
 ```console
-$ docker build -t nodeshift/ubi8-s2i-deno
+$ docker build -t dbevenius/ubi8-s2i-deno
 ```
 This will print the usage information.
 
@@ -31,7 +31,7 @@ commands.
 
 Build using `s2i`:
 ```console
-$ s2i build file:///$PWD nodeshift/ubi8-s2i-deno:latest --context-dir=example-app deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
+$ s2i build file:///$PWD dbevenius/ubi8-s2i-deno:latest --context-dir=example-app deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
 ```
 And then run the produced image:
 ```console
@@ -53,4 +53,3 @@ that can be set using the PERMISSIONS environment variable.
 
 #### TSCONFIG
 Is an optional build option to specify a TypeScript configuration file.
-

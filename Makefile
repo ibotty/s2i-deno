@@ -1,5 +1,5 @@
 FROM=registry.access.redhat.com/ubi8/s2i-base
-IMAGE_NAME=nodeshift/ubi8-s2i-deno
+IMAGE_NAME=dbevenius/ubi8-s2i-deno
 
 # These values are changed in each version branch
 # This is the only place they need to be changed
@@ -18,7 +18,7 @@ build: Dockerfile s2i contrib
 
 .PHONY: test
 test:
-	 BUILDER=$(TARGET) DENO_VERSION=$(DENO_VERSION) ./test/run.sh
+	 #BUILDER=$(TARGET) DENO_VERSION=$(DENO_VERSION) ./test/run.sh
 
 .PHONY: clean
 clean:
