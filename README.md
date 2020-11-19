@@ -31,7 +31,7 @@ commands.
 
 Build using `s2i`:
 ```console
-$ s2i build file:///$PWD dbevenius/ubi8-s2i-deno:latest --context-dir=example-app deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
+$ s2i build https://github.com/danbev/deno-example dbevenius/ubi8-s2i-deno:0.1 deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
 ```
 And then run the produced image:
 ```console
