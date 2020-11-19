@@ -13,6 +13,11 @@ resovle and download any depedencies, as well as compile any TypeScript so that
 this does not have to happen at runtime.
 
 ### Building
+Using make:
+```console
+$ make build
+```
+Manually:
 ```console
 $ docker build -t dbevenius/ubi8-s2i-deno .
 ```
