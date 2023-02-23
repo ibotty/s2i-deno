@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/s2i-base
+FROM registry.access.redhat.com/ubi9/s2i-base
 
 EXPOSE 8080
 
@@ -7,7 +7,8 @@ ARG DENO_VERSION
 ENV DENO_VERSION=${DENO_VERSION} \
     DEBUG_PORT=5858 \
     SUMMARY="Platform for building and running Deno ${DENO_VERSION} applications" \
-    DESCRIPTION="TBD"
+    DESCRIPTION="" \
+    PATH="/opt/app-root/src/.deno/bin:${PATH}"
 
 LABEL io.k8s.description="$DESCRIPTION" \
       io.k8s.display-name="Deno $DENO_VERSION" \
@@ -16,17 +17,15 @@ LABEL io.k8s.description="$DESCRIPTION" \
       com.redhat.deployments-dir="/opt/app-root/src" \
       com.redhat.dev-mode="DEV_MODE:false" \
       com.redhat.dev-mode.port="DEBUG_PORT:5858" \
-      maintainer="Daniel Bevenius <daniel.bevenius@gmail.com>" \
+      maintainer="Tobias Florek <tob@butter.sh>" \
       summary="$SUMMARY" \
       description="$DESCRIPTION" \
       version="$DENO_VERSION" \
-      name="dbevenius/ubi8-s2i-deno" \
-      usage="s2i build . dbevenius/ubi8-s2i-deno myapp"
+      name="quay.io/ibotty/s2i-deno" \
+      usage="s2i build . quay.io/ibotty/s2i-deno myapp"
 
-COPY ./contrib/ /opt/app-root
-RUN /opt/app-root/etc/install_deno.sh
+RUN curl -fsSL https://deno.land/install.sh | sh -s $DENO_VERSION
 COPY ./s2i/ $STI_SCRIPTS_PATH
-ENV PATH="/opt/app-root/src/.deno/bin:${PATH}"
 
 USER 1001
 
