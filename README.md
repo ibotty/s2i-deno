@@ -1,12 +1,13 @@
-# ubi8-s2i-deno
-This project is just for exploring what a
-[source-to-image](https://github.com/openshift/source-to-image) (s2i) might look
-like for [Deno](https://deno.land/) applications.
+# Source-To-Image builder for Deno
 
-The goal here is that a user can have a Deno project, for example on github,
-and use the `s2i` build command to point to that project and `s2i` will generate
-an container with that application which can then be run. The container will
-include Deno and run the application when the image is run.
+This project is a
+[source-to-image](https://github.com/openshift/source-to-image) (s2i) builder
+for [Deno](https://deno.land/) applications.
+
+The user can have a Deno project and use the `s2i` build command to point to
+that project and `s2i` will generate an container with that application which
+can then be run. The container will include Deno and run the application when
+the image is run.
 
 As part of the assemble stage this Deno `s2i` will use Deno's `bundle` command to
 resovle and download any depedencies, as well as compile any TypeScript so that
@@ -25,7 +26,7 @@ $ docker build -t dbevenius/ubi8-s2i-deno .
 ### Running
 Run this image (will print the usage):
 ```console
-$ docker build -t dbevenius/ubi8-s2i-deno
+$ docker build -t quay.io/ibotty/s2i-deno
 ```
 This will print the usage information.
 
@@ -36,7 +37,7 @@ commands.
 
 Build using `s2i`:
 ```console
-$ s2i build https://github.com/danbev/deno-example dbevenius/ubi8-s2i-deno:0.1 deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
+$ s2i build https://github.com/danbev/deno-example quay.io/ibotty/s2i-deno deno-sample-app -e MAIN="src/welcome.ts" -e PERMISSIONS="--allow-read=/etc"
 ```
 And then run the produced image:
 ```console

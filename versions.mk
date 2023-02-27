@@ -1,3 +1,3 @@
-DENO_VERSION=1.5.1
-IMAGE_TAG=0.1
+# Note: without v prefix
+DENO_VERSION=1.31.1
 LTS_TAG=
