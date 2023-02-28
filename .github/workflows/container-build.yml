@@ -16,30 +16,10 @@ env:
 on:
   push:
   workflow_dispatch:
-  schedule:
-  - cron: '0 0 * * *' # daily
 
 jobs:
-  check_outdated:
-    name: check for outdated base image
-    runs-on: ubuntu-latest
-    outputs:
-      out-of-date: ${{ steps.check_outdated.outputs.out-of-date }}
-    steps:
-    - name: check image update
-      id: check_outdated
-      uses: twiddler/is-my-docker-parent-image-out-of-date@v1
-      with:
-        parent-image: ${{ env.PARENT_IMAGE }}
-        my-image: ${{ env.IMAGE_NAME }}
-      if: ${{ github.event_name == 'schedule' }}
-
   build:
     name: build image
-
-    needs: check_outdated
-    if: ${{ github.event_name != 'schedule' || needs.check_outdated.outputs.out-of-date == 'true' }}
-
     runs-on: ubuntu-latest
     steps:
     - name: clone
