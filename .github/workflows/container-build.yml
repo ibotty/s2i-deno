@@ -1,0 +1,78 @@
+---
+name: build container
+env:
+  DENO_VERSION: 1.31.1
+  PARENT_IMAGE: registry.access.redhat.com/ubi9-minimal
+
+  REGISTRY: quay.io/ibotty
+  IMAGE_NAME: s2i-deno
+  # maybe include tag "${{ github.sha }}"
+  IMAGE_TAG: latest
+
+  # update as soon as deno supports different architectures
+  #ARCHS: amd64, arm64, ppc64le
+  ARCHS: amd64
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+  - cron: '0 0 * * *' # daily
+
+jobs:
+  check_outdated:
+    name: check for outdated base image
+    runs-on: ubuntu-latest
+    outputs:
+      out-of-date: ${{ steps.check_outdated.outputs.out-of-date }}
+    steps:
+    - name: check image update
+      id: check_outdated
+      uses: twiddler/is-my-docker-parent-image-out-of-date@v1
+      with:
+        parent-image: ${{ env.PARENT_IMAGE }}
+        my-image: ${{ env.IMAGE_NAME }}
+      if: ${{ github.event_name == 'schedule' }}
+
+  build:
+    name: build image
+
+    needs: check_outdated
+    if: ${{ github.event_name != 'schedule' || needs.check_outdated.outputs.out-of-date == 'true' }}
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: clone
+      uses: actions/checkout@v3
+
+    - name: log into registry
+      uses: redhat-actions/podman-login@v1
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ secrets.QUAY_USERNAME }}
+        password: ${{ secrets.QUAY_PASSWORD }}
+
+    - name: set up qemu for multi-arch
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu-user-static
+      if: ${{ env.ARCHS != 'amd64' }}
+
+    - name: buildah
+      id: build-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: ${{ env.IMAGE_NAME }}
+        tags: ${{ env.IMAGE_TAG }} ${{ env.DENO_VERSION }}
+        archs: ${{ env.ARCHS }}
+        oci: true
+        containerfiles: ./Containerfile
+        build-args: |
+          DENO_VERSION=v${{ env.DENO_VERSION }}
+
+    - name: push to registry
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build-image.outputs.image }}
+        tags: ${{ steps.build-image.outputs.tags }}
+        registry: ${{ env.REGISTRY }}
