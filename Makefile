@@ -11,8 +11,8 @@ TARGET=$(IMAGE_NAME):$(DENO_VERSION)
 .PHONY: all
 all: build test
 
-build: Dockerfile s2i
-	podman build \
+build: Containerfile s2i
+	podman build -f Containerfile \
 	--build-arg DENO_VERSION=v$(DENO_VERSION) \
 	--pull -t $(TARGET) .
 
