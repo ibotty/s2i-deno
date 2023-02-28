@@ -3,7 +3,7 @@ name: check parent image
 
 env:
   PARENT_IMAGE: registry.access.redhat.com/ubi9-minimal
-  IMAGE_NAME: quay.io/ibotty/s2i-deno:latest
+  IMAGE_NAME: quay.io/ibotty/s2i-deno
 
 on:
   workflow_dispatch:
@@ -11,28 +11,105 @@ on:
   - cron: '0 0 * * *' # daily
 
 jobs:
-  check_outdated:
-    name: Check for outdated parent container image
+  latest_deno:
+    name: deno version
     runs-on: ubuntu-latest
     outputs:
-      out-of-date: ${{ steps.check_outdated.outputs.out-of-date }}
+      version: ${{ steps.get_latest_deno.outputs.version }}
     steps:
-    - name: check for outdated base image
-      id: check_outdated
-      uses: twiddler/is-my-docker-parent-image-out-of-date@v1
-      with:
-        parent-image: ${{ env.PARENT_IMAGE }}
-        my-image: ${{ env.IMAGE_NAME }}
+    - name: Get latest deno release
+      id: get_latest_deno
+      shell: bash
+      run: |
+        set -euo pipefail
+        get_latest_github_release() {
+          local url="https://api.github.com/repos/$1/releases/latest"
+          curl -fsSLH 'Accept: application/json' "$url" | jq -cr .tag_name
+        }
+        deno_version="$(get_latest_github_release denoland/deno)"
+        echo "discovered  denoland/deno $deno_version"
+
+        echo "version=$deno_version" >> $GITHUB_OUTPUT
+
+  image_tags:
+    name: Image tags
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.image_tags.outputs.tags }}
+    steps:
+    - name: get top 5 image tags (excluding latest)
+      id: image_tags
+      shell: bash
+      run: |
+        set -euo pipefail
+        get_image_tags() {
+          skopeo inspect "docker://$1" | jq -cr '.RepoTags[]'
+        }
+        image_tags="$(get_image_tags "${{ env.IMAGE_NAME }}" | grep -Ev '^latest$' | head -n 5 | xargs)"
+        echo "discovered image tags for ${{ env.IMAGE_NAME }}: $image_tags"
+        echo tags=\"$image_tags\" >> $GITHUB_OUTPUT
+
+  check_outdated:
+    name: check for outdated container images
+    needs: [latest_deno, image_tags]
+    if: ${{ steps.image_tags.outputs.tags != '' }}
+    outputs:
+      matrix: ${{ steps.check_outdated.outputs.matrix }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: check outdated parent image
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        skopeo_inspect() {
+          cachefile="/tmp/skopeo/$1"
+          mkdir -p "$(dirname "$cachefile")"
+
+          [ -f "$cachefile" ] && cat "$cachefile" && return
+
+          skopeo inspect "docker://$1" | tee "$cachefile"
+        }
+
+        check_outdated() {
+          local tag="$1"
+          local own="$(skopeo_inspect "$tag")"
+          local own_layers="$(echo "$own" | jq -c .Layers)"
+          local parent="$(echo "$own" | jq -cr .Labels.parent_image)"
+          local parent_layers="$(skopeo_inspect "$parent" | jq -c .Layers)"
+          local outdated="$(jq -cn "$own_layers - ($own_layers - $parent_layers) | .== []")"
+
+          if [ "$outdated" = "true" ]; then
+            jq -cn '{deno_version: $t, parent_image: $p}' --arg t "$tag" --arg p "$parent"
+          fi
+        }
+
+        to_rebuild="$(
+          for tag in ${{ needs.image_tags.outputs.tags }}; do
+            check_outdated "${{ env.IMAGE_NAME }}:$tag" | \
+              jq -c '. + { tags: $t }' --arg t "$tag"
+          done | jq -cs .)"
+
+        # add latest tag to last deno version
+        to_rebuild="$(echo "$to_rebuild" |\
+          jq -c '(.[] | select(.deno_version == $v)).tags += $t' \
+            --arg v "${{ needs.latest_deno.outputs.version }}" \
+            --arg t " latest" )"
+
+        echo "matrix to rebuild: $to_rebuild"
+
+        echo "matrix=$to_rebuild" >> "$GITHUB_OUTPUT"
 
   rebuild:
     name: Rebuilds if base image changed
     runs-on: ubuntu-latest
     needs: check_outdated
-    if: ${{ needs.check_outdated.outputs.out-of-date == 'true' }}
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.check_outdated.outputs.matrix) }}
     steps:
     - name: trigger rebuild
       uses: actions/github-script@v6
-      if: ${{ env.release_version }}      
       with:
         script: |
           await github.rest.actions.createWorkflowDispatch({
@@ -41,5 +118,8 @@ jobs:
             workflow_id: "container-build.yml",
             ref: "main",
             inputs: {
+              "deno_version": "${{ matrix.deno_version }}",
+              "parent_image": "${{ matrix.parent_image }}",
+              "tags": "${{ matrix.tags }}"
             }
           });

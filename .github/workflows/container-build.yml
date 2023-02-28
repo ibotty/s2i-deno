@@ -1,21 +1,32 @@
 ---
 name: build container
 env:
-  DENO_VERSION: 1.31.1
-  PARENT_IMAGE: registry.access.redhat.com/ubi9-minimal
-
   REGISTRY: quay.io/ibotty
   IMAGE_NAME: s2i-deno
-  # maybe include tag "${{ github.sha }}"
-  IMAGE_TAG: latest
 
   # update as soon as deno supports different architectures
   #ARCHS: amd64, arm64, ppc64le
   ARCHS: amd64
 
 on:
-  push:
+  # push:
+  # workflow_call:
   workflow_dispatch:
+    inputs:
+      deno_version:
+        description: 'Deno Version'
+        required: true
+        type: string
+      parent_image:
+        description: 'Parent image in the Containerfile'
+        required: true
+        default: registry.access.redhat.com/ubi9-minimal
+        type: string
+      tags:
+        description: 'Tags to publish, space separated'
+        required: true
+        default: latest
+        type: string
 
 jobs:
   build:
@@ -43,12 +54,13 @@ jobs:
       uses: redhat-actions/buildah-build@v2
       with:
         image: ${{ env.IMAGE_NAME }}
-        tags: ${{ env.IMAGE_TAG }} ${{ env.DENO_VERSION }}
+        tags: ${{ inputs.tags }}
         archs: ${{ env.ARCHS }}
         oci: true
         containerfiles: ./Containerfile
         build-args: |
-          DENO_VERSION=v${{ env.DENO_VERSION }}
+          DENO_VERSION=${{ inputs.deno_version }}
+          PARENT_IMAGE=${{ inputs.parent_image }}
 
     - name: push to registry
       uses: redhat-actions/push-to-registry@v2

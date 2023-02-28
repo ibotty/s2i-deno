@@ -14,7 +14,7 @@ all: build test
 build: Containerfile s2i
 	podman build -f Containerfile \
 	--build-arg DENO_VERSION=v$(DENO_VERSION) \
-	--pull -t $(TARGET) .
+	-t $(TARGET) .
 
 .PHONY: test
 test:

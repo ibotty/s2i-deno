@@ -1,8 +1,11 @@
-FROM registry.access.redhat.com/ubi9-minimal
+ARG PARENT_IMAGE=registry.access.redhat.com/ubi9-minimal
+FROM $PARENT_IMAGE
+
+# this has to be specified again after "FROM"
+ARG PARENT_IMAGE
+ARG DENO_VERSION
 
 EXPOSE 8080
-
-ARG DENO_VERSION
 
 ENV DENO_VERSION=${DENO_VERSION} \
     DEBUG_PORT=5858 \
@@ -26,7 +29,8 @@ LABEL io.k8s.description="$DESCRIPTION" \
       description="$DESCRIPTION" \
       version="$DENO_VERSION" \
       name="quay.io/ibotty/s2i-deno" \
-      usage="s2i build . quay.io/ibotty/s2i-deno myapp"
+      usage="s2i build . quay.io/ibotty/s2i-deno myapp" \
+      parent_image=$PARENT_IMAGE
 
 RUN echo 'default:x:1001:0:Default Application User:/opt/app-root/src:/bin/bash' >> /etc/passwd \
  && chmod 0666 /etc/passwd \
