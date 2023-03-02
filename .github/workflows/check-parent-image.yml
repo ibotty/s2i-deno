@@ -1,5 +1,5 @@
 ---
-name: check parent image
+name: last images' parent image up to date
 
 env:
   PARENT_IMAGE: registry.access.redhat.com/ubi9-minimal

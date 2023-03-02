@@ -1,5 +1,5 @@
 ---
-name: check image with latest deno exists
+name: container with latest deno built
 
 env:
   IMAGE_NAME: quay.io/ibotty/s2i-deno
