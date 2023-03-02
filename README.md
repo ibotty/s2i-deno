@@ -1,3 +1,7 @@
+[![build container](https://github.com/ibotty/s2i-deno/actions/workflows/container-build.yml/badge.svg)](https://github.com/ibotty/s2i-deno/actions/workflows/container-build.yml)
+[![container with latest deno release](https://github.com/ibotty/s2i-deno/actions/workflows/check-deno-release.yml/badge.svg)](https://github.com/ibotty/s2i-deno/actions/workflows/check-deno-release.yml)
+[![last images up-to-date](https://github.com/ibotty/s2i-deno/actions/workflows/check-parent-image.yml/badge.svg)](https://github.com/ibotty/s2i-deno/actions/workflows/check-parent-image.yml)
+
 # Source-To-Image builder for Deno
 
 This project is a
