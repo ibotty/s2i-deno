@@ -52,7 +52,7 @@ jobs:
   check_outdated:
     name: check for outdated container images
     needs: [latest_deno, image_tags]
-    if: ${{ steps.image_tags.outputs.tags != '' }}
+    if: ${{ needs.image_tags.outputs.tags != '' }}
     outputs:
       matrix: ${{ steps.check_outdated.outputs.matrix }}
     runs-on: ubuntu-latest
