@@ -52,13 +52,8 @@ jobs:
     name: Trigger build of new image
     needs: [latest_deno, image_tags]
     if: ${{ ! contains(needs.image_tags.outputs.tags, needs.latest_deno.outputs.version) }}
-    strategy:
-      matrix:
-        include:
-        - tags: latest ${{ needs.latest_deno.outputs.version }}
-          deno_version: ${{ needs.latest_deno.outputs.version }}
     uses: ./.github/workflows/container-build.yml
     with:
-      deno_version: ${{ matrix.deno_version }}
-      tags: ${{ matrix.tags }}
+      tags: latest ${{ needs.latest_deno.outputs.version }}
+      deno_version: ${{ needs.latest_deno.outputs.version }}
     secrets: inherit
