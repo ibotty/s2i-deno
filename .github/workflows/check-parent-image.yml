@@ -72,8 +72,9 @@ jobs:
         }
 
         check_outdated() {
-          local tag="$1"
-          local own="$(skopeo_inspect "$tag")"
+          local image="$1"
+          local tag="${image/*:/}"
+          local own="$(skopeo_inspect "$image")"
           local own_layers="$(echo "$own" | jq -c .Layers)"
           local parent="$(echo "$own" | jq -cr .Labels.parent_image)"
           local parent_layers="$(skopeo_inspect "$parent" | jq -c .Layers)"
