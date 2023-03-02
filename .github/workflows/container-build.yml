@@ -9,9 +9,7 @@ env:
   ARCHS: amd64
 
 on:
-  # push:
-  # workflow_call:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       deno_version:
         description: 'Deno Version'
@@ -19,7 +17,6 @@ on:
         type: string
       parent_image:
         description: 'Parent image in the Containerfile'
-        required: true
         default: registry.access.redhat.com/ubi9-minimal
         type: string
       tags:
