@@ -16,23 +16,21 @@ jobs:
     name: deno version
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.get_latest_deno.outputs.version }}
+      version: ${{ steps.get_latest_package.outputs.result }}
     steps:
-    - name: Get latest deno release
-      id: get_latest_deno
-      shell: bash
-      run: |
-        set -euo pipefail
-        get_latest_github_release() {
-          local url="https://api.github.com/repos/$1/releases/latest"
-          curl -fsSLH 'Accept: application/json' "$url" | jq -cr .tag_name
-        }
-        deno_version="$(get_latest_github_release denoland/deno)"
-        echo "discovered  denoland/deno $deno_version"
+    - name: Get latest package release
+      id: get_latest_package
+      uses: actions/github-script@v6
+      with:
+        retries: 3
+        result-encoding: string
+        script: |
+          return await github.rest.repos.getLatestRelease({
+            owner: "denoland",
+            repo: "deno"
+          }).then(r => r.data.tag_name)
 
-        echo "version=$deno_version" >> $GITHUB_OUTPUT
-
-  image_tags:
+    image_tags:
     name: Image tags
     runs-on: ubuntu-latest
     outputs:
