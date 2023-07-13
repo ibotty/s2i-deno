@@ -30,7 +30,7 @@ jobs:
             repo: "deno"
           }).then(r => r.data.tag_name)
 
-    image_tags:
+  image_tags:
     name: Image tags
     runs-on: ubuntu-latest
     outputs:
