@@ -35,8 +35,8 @@ LABEL io.k8s.description="$DESCRIPTION" \
 RUN echo 'default:x:1001:0:Default Application User:/opt/app-root/src:/bin/bash' >> /etc/passwd \
  && chmod 0666 /etc/passwd \
  && chmod 0777 /etc \
- && mkdir -p /opt/app-root/src \
- && chown 1001:0 /opt/app-root/src \
+ && mkdir -p /opt/app-root/{bin,src} \
+ && chown 1001:0 /opt/app-root/{bin,src} \
  && microdnf install -y unzip \
  && microdnf clean all
 

@@ -4,8 +4,14 @@ set -e
 source /usr/libexec/s2i/env
 source /usr/libexec/s2i/generate-container-user
 
+: ${MAIN:=bundle.js}
+
 run_deno() {
-  deno run ${PERMISSIONS} bundle.js
+  deno run ${PERMISSIONS} "${MAIN}"
 }
 
-run_deno
+if [ -x /opt/app-root/bin/main ]; then
+  /opt/app-root/bin/main "$@"
+else
+  run_deno
+fi

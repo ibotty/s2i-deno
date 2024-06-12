@@ -2,19 +2,32 @@
 
 set -e
 
+: ${PERMISSIONS:=} \
+  ${COMPILE_FLAGS:=} \
+  ${DO_COMPILE:=} \
+  ${ADDITIONAL_ARGUMENTS:=}
+
 source /usr/libexec/s2i/env
-cp -r /tmp/src/ /opt/app-root/
-pushd /opt/app-root/src > /dev/null
 
-echo "---> Bundling your Deno application"
+bundle() {
+  echo "---> Copying your Deno application"
+  cp -r /tmp/src/ /opt/app-root/
+  cd /opt/app-root/src
+  deno bundle ${TSCONFIG_FLAG} ${MAIN} > bundle.js
+}
 
-TSCONFIG_FLAG=""
-if [ ! -z "${TSCONFIG}" ]
-then
-  TSCONFIG_FLAG="-c ${TSCONFIG}"
-  echo "---> Using TypeScript config ${TSCONFIG}"
-fi
+compile() {
+  echo "---> Compiling your Deno application"
+  mkdir -p /opt/app-root/bin
+  cd /tmp/src
+  set -x
+  deno compile $PERMISSIONS ${COMPILE_FLAGS} --output /opt/app-root/bin/main ${MAIN} ${ADDITIONAL_ARGUMENTS}
+}
 
 echo -e "Deno version:\n`deno --version`"
-set -x
-deno bundle ${TSCONFIG_FLAG} ${MAIN} > bundle.js
+
+if [ "${DO_COMPILE}" = yes ]; then
+  compile
+else
+  bundle
+fi
